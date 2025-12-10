@@ -79,8 +79,11 @@ export default function Home() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token')
-    router.push('/login')
+    // No auth in dev: simply reload to reset UI state
+    try {
+      localStorage.removeItem('auth_token')
+    } catch (e) {}
+    router.reload()
   }
 
   return (

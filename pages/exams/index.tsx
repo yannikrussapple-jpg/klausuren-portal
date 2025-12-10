@@ -43,8 +43,10 @@ export default function ExamsPage() {
   }, [classId, teacherId])
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token')
-    router.push('/login')
+    try {
+      localStorage.removeItem('auth_token')
+    } catch (e) {}
+    router.reload()
   }
 
   if (!classId || !teacherId) {

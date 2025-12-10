@@ -34,17 +34,16 @@ function generateId() {
 export function initMockDB() {
   if (initialized) return
   initialized = true
+  // Create classes with stable IDs (deterministic across process restarts)
+  const classNames = ['5.', '6.', '7.', '8.', '9.', '10.', '11.', '12.', '13.']
+  classes = classNames.map((name, idx) => ({ _id: `class-${5 + idx}`, name }))
 
-  // Create classes
-  const classNames = ['10.', '11.', '12.', '13.']
-  classes = classNames.map(name => ({ _id: generateId(), name }))
-
-  // Create teachers for each class
+  // Create teachers for each class with stable IDs
   const teacherNames = ['Herr Bär', 'Herr Schuster', 'Herr Uka']
   teachers = []
-  classes.forEach(c => {
-    teacherNames.forEach(name => {
-      teachers.push({ _id: generateId(), name, classId: c._id })
+  classes.forEach((c, classIdx) => {
+    teacherNames.forEach((tName, tIdx) => {
+      teachers.push({ _id: `teacher-${10 + classIdx}-${tIdx + 1}`, name: tName, classId: c._id })
     })
   })
 
