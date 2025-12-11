@@ -6,15 +6,19 @@ const PASSWORD = 'Monte'
 
 export function useAuthProtection() {
   const [isAuthorized, setIsAuthorized] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    const update = () => setIsAuthorized(!!memoryAuth)
+    const update = () => {
+      setIsAuthorized(!!memoryAuth)
+      setLoading(false)
+    }
     update()
     window.addEventListener('portal-auth', update)
     return () => window.removeEventListener('portal-auth', update)
   }, [])
 
-  return { isAuthorized }
+  return { isAuthorized, loading }
 }
 
 export function loginWithPassword(password: string) {
