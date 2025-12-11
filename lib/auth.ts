@@ -4,7 +4,7 @@ import React from 'react'
 let memoryAuth = false
 const PASSWORD = 'Monte'
 
-export function useAuthProtection() {
+export function useAuthProtection(): { isAuthorized: boolean; loading: boolean } {
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
 
