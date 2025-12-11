@@ -35,7 +35,13 @@ export default function AccountRegister() {
           <p className="text-sm text-gray-600 mb-6">Neues Konto anlegen, um Downloads freizuschalten.</p>
           {success && <div className="mb-4 rounded-md bg-green-50 text-green-700 px-3 py-2 text-sm">{success}</div>}
           {error && <div className="mb-4 rounded-md bg-red-50 text-red-700 px-3 py-2 text-sm">{error}</div>}
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form
+  method="POST"
+  action="/api/users/login"
+  onSubmit={onSubmit}
+  className="space-y-4"
+>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Benutzername</label>
               <input

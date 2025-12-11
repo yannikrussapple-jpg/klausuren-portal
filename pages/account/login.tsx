@@ -36,7 +36,13 @@ export default function AccountLogin() {
           <h1 className="text-3xl font-bold mb-2 text-blue-900">Einloggen</h1>
           <p className="text-sm text-gray-600 mb-6">Mit bestehenden Zugangsdaten anmelden.</p>
           {info && <div className="mb-4 rounded-md bg-green-50 text-green-700 px-3 py-2 text-sm">{info}</div>}
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form
+  method="POST"
+  action="/api/users/login"
+  onSubmit={onSubmit}
+  className="space-y-4"
+>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Benutzername</label>
               <input
