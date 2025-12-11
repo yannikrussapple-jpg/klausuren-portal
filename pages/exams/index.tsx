@@ -7,7 +7,8 @@ import { useAuthProtection } from '../../lib/auth'
 
 export default function ExamsPage() {
   const router = useRouter()
-  const { isAuthorized, loading } = useAuthProtection()
+  const auth = useAuthProtection() as { isAuthorized: boolean; loading: boolean }
+  const { isAuthorized, loading } = auth
   const { classId, teacherId } = router.query
   const [exams, setExams] = useState<any[]>([])
   const [selectedExam, setSelectedExam] = useState<any>(null)
