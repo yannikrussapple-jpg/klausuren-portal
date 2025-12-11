@@ -1,16 +1,41 @@
 import React from 'react'
 
-// For local development: disable password redirect so the app is immediately
-// accessible without entering a password. The login API remains unchanged
-// (useful if you want to re-enable auth later).
+// In-memory auth flag. Not persisted — cleared on full page reload.
+let memoryAuth = false
+const PASSWORD = 'Monte'
+
 export function useAuthProtection() {
-  const isAuthorized = true
-  const loading = false
-  return { isAuthorized, loading }
+  const [isAuthorized, setIsAuthorized] = React.useState(false)
+
+  React.useEffect(() => {
+    const update = () => setIsAuthorized(!!memoryAuth)
+    update()
+    window.addEventListener('portal-auth', update)
+    return () => window.removeEventListener('portal-auth', update)
+  }, [])
+
+  return { isAuthorized }
 }
 
-export function withAuthProtection(Component: any) {
-  return function ProtectedComponent(props: any) {
-    return React.createElement(Component, props)
+export function loginWithPassword(password: string) {
+  if (password === PASSWORD) {
+    memoryAuth = true
+    // notify listeners (App wrapper) so it can re-check and redirect
+    try {
+      window.dispatchEvent(new Event('portal-auth'))
+    } catch (e) {}
+    return true
   }
+  return false
+}
+
+export function logoutPortal() {
+  memoryAuth = false
+  try {
+    window.dispatchEvent(new Event('portal-auth'))
+  } catch (e) {}
+}
+
+export function isAuthorizedMemory() {
+  return !!memoryAuth
 }

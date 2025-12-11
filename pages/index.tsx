@@ -12,6 +12,45 @@ export default function Home() {
   const [selectedClass, setSelectedClass] = useState<string>('')
   const [selectedTeacher, setSelectedTeacher] = useState<string>('')
   const [teachersLoading, setTeachersLoading] = useState(false)
+  // Effects must be declared unconditionally (avoid conditional hooks)
+  // Load all classes when authorized
+  useEffect(() => {
+    if (!isAuthorized) return
+    const loadClasses = async () => {
+      try {
+        const response = await axios.get('/api/classes')
+        setClasses(response.data)
+      } catch (error) {
+        console.error('Error loading classes:', error)
+      }
+    }
+    loadClasses()
+  }, [isAuthorized])
+
+  // Load teachers when class is selected (and when authorized)
+  useEffect(() => {
+    if (!isAuthorized) return
+    if (!selectedClass) {
+      setTeachers([])
+      return
+    }
+
+    const loadTeachers = async () => {
+      try {
+        setTeachersLoading(true)
+        const response = await axios.get('/api/teachers', {
+          params: { classId: selectedClass }
+        })
+        setTeachers(response.data)
+        setTeachersLoading(false)
+      } catch (error) {
+        console.error('Error loading teachers:', error)
+        setTeachersLoading(false)
+      }
+    }
+
+    loadTeachers()
+  }, [selectedClass, isAuthorized])
 
   if (loading) {
     return (
@@ -26,43 +65,6 @@ export default function Home() {
   if (!isAuthorized) {
     return null
   }
-
-  // Load all classes on mount
-  useEffect(() => {
-    const loadClasses = async () => {
-      try {
-        const response = await axios.get('/api/classes')
-        setClasses(response.data)
-      } catch (error) {
-        console.error('Error loading classes:', error)
-      }
-    }
-    loadClasses()
-  }, [])
-
-  // Load teachers when class is selected
-  useEffect(() => {
-    if (!selectedClass) {
-      setTeachers([])
-      return
-    }
-
-    const loadTeachers = async () => {
-      try {
-        setTeachersLoading(true)
-        const response = await axios.get('/api/teachers', { 
-          params: { classId: selectedClass } 
-        })
-        setTeachers(response.data)
-        setTeachersLoading(false)
-      } catch (error) {
-        console.error('Error loading teachers:', error)
-        setTeachersLoading(false)
-      }
-    }
-
-    loadTeachers()
-  }, [selectedClass])
 
   const handleSelectClass = (classId: string) => {
     setSelectedClass(classId)

@@ -13,6 +13,23 @@ export default function ExamsPage() {
   const [selectedExam, setSelectedExam] = useState<any>(null)
   const [teacher, setTeacher] = useState<any>(null)
   const [examsLoading, setExamsLoading] = useState(true)
+  // Effects must be declared unconditionally to keep hooks order stable
+  useEffect(() => {
+    if (loading) return
+    if (!isAuthorized) return
+    if (!classId || !teacherId) return
+
+    setExamsLoading(true)
+    axios
+      .get('/api/exams', { params: { classId, teacherId } })
+      .then(r => {
+        setExams(r.data)
+        setExamsLoading(false)
+        if (r.data.length > 0) {
+          setTeacher(r.data[0].teacherId)
+        }
+      })
+  }, [classId, teacherId, isAuthorized, loading])
 
   if (loading) {
     return (
@@ -27,20 +44,6 @@ export default function ExamsPage() {
   if (!isAuthorized) {
     return null
   }
-
-  useEffect(() => {
-    if (!classId || !teacherId) return
-    setExamsLoading(true)
-    axios
-      .get('/api/exams', { params: { classId, teacherId } })
-      .then(r => {
-        setExams(r.data)
-        setExamsLoading(false)
-        if (r.data.length > 0) {
-          setTeacher(r.data[0].teacherId)
-        }
-      })
-  }, [classId, teacherId])
 
   const handleLogout = () => {
     try {
