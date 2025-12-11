@@ -19,7 +19,6 @@ export default function AccountLogin() {
   }, [router.query.registered])
 
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
     setError('')
     try {
       await axios.post('/api/users/login', { username, password })
