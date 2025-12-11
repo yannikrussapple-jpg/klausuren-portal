@@ -80,16 +80,9 @@ export default function Home() {
     router.push(`/exams?classId=${selectedClass}&teacherId=${selectedTeacher}`)
   }
 
-  const handleLogout = () => {
-    // No auth in dev: simply reload to reset UI state
-    try {
-      localStorage.removeItem('auth_token')
-    } catch (e) {}
-    router.reload()
-  }
 
   return (
-    <Layout onLogout={handleLogout}>
+    <Layout>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">

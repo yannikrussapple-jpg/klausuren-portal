@@ -55,7 +55,7 @@ export default function ExamsPage() {
 
   if (!classId || !teacherId) {
     return (
-      <Layout onLogout={handleLogout}>
+      <Layout>
         <div className="text-center py-12">
           <p className="text-gray-600 mb-4">Keine Klasse oder Lehrer ausgewählt</p>
           <Link href="/" className="text-blue-600 underline">Zurück zur Startseite</Link>
@@ -65,7 +65,7 @@ export default function ExamsPage() {
   }
 
   return (
-    <Layout onLogout={handleLogout}>
+    <Layout>
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -125,15 +125,24 @@ export default function ExamsPage() {
                     </div>
 
                     {/* Download Button */}
-                    <a
-                      href={selectedExam.fileUrl}
-                      download
-                      target="_blank"
-                      rel="noreferrer"
+                    {/** Gate download: redirect to login/register if not logged in */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          const r = await axios.get('/api/users/me')
+                          if (r.data?.user) {
+                            window.open(selectedExam.fileUrl, '_blank')
+                          } else {
+                            router.push(`/account/login?next=${encodeURIComponent(selectedExam.fileUrl)}`)
+                          }
+                        } catch {
+                          router.push(`/account/login?next=${encodeURIComponent(selectedExam.fileUrl)}`)
+                        }
+                      }}
                       className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition"
                     >
                       📥 Dokument herunterladen
-                    </a>
+                    </button>
                   </div>
                 ) : (
                   <div className="bg-white rounded-lg shadow-lg p-6 text-center text-gray-500">

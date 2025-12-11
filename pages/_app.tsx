@@ -3,18 +3,28 @@ import React from 'react'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { useAuthProtection } from '../lib/auth'
+import Layout from '../components/Layout'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
-  const { isAuthorized } = useAuthProtection()
+  const { isAuthorized, loading } = useAuthProtection()
 
   React.useEffect(() => {
-    // Always require login on full reloads; in-memory auth is only set after successful login
     if (typeof window === 'undefined') return
-    if (!isAuthorized && router.pathname !== '/login') {
-      router.replace('/login')
+    if (!loading && !isAuthorized && router.pathname !== '/account/login') {
+      router.replace('/account/login')
     }
-  }, [isAuthorized, router])
+  }, [isAuthorized, loading, router])
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-gray-600">Weiterleitung...</p>
+        </div>
+      </Layout>
+    )
+  }
 
   return <Component {...pageProps} />
 }
