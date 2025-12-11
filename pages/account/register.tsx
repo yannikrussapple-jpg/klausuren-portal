@@ -38,11 +38,22 @@ export default function AccountRegister() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Benutzername</label>
-              <input value={username} onChange={e=>setUsername(e.target.value)} className="mt-1 w-full border border-emerald-200 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-400 focus:outline-none" />
+              <input
+                autoComplete="off"
+                value={username}
+                onChange={e=>setUsername(e.target.value)}
+                className="mt-1 w-full border border-emerald-200 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-400 focus:outline-none"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Passwort</label>
-              <input type="password" value={password} onChange={e=>setPassword(e.target.value)} className="mt-1 w-full border border-emerald-200 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-400 focus:outline-none" />
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={e=>setPassword(e.target.value)}
+                className="mt-1 w-full border border-emerald-200 rounded px-3 py-2 focus:ring-2 focus:ring-emerald-400 focus:outline-none"
+              />
             </div>
             <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg shadow">Registrieren</button>
           </form>

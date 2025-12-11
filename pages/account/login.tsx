@@ -39,11 +39,22 @@ export default function AccountLogin() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Benutzername</label>
-              <input value={username} onChange={e=>setUsername(e.target.value)} className="mt-1 w-full border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+              <input
+                autoComplete="off"
+                value={username}
+                onChange={e=>setUsername(e.target.value)}
+                className="mt-1 w-full border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Passwort</label>
-              <input type="password" value={password} onChange={e=>setPassword(e.target.value)} className="mt-1 w-full border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={e=>setPassword(e.target.value)}
+                className="mt-1 w-full border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              />
             </div>
             {error && <div className="text-red-600 text-sm">{error}</div>}
             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow">Login</button>
