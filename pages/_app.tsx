@@ -12,6 +12,9 @@ export default function App({ Component, pageProps }: AppProps) {
   React.useEffect(() => {
     if (typeof window === 'undefined') return
     
+    // Don't check auth for API routes
+    if (router.pathname.startsWith('/api')) return
+    
     const publicRoutes = ['/login', '/account/login', '/account/register']
     const isPublicRoute = publicRoutes.includes(router.pathname)
     
