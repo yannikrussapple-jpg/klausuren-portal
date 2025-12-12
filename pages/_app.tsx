@@ -11,8 +11,11 @@ export default function App({ Component, pageProps }: AppProps) {
 
   React.useEffect(() => {
     if (typeof window === 'undefined') return
-    // Password gate first: redirect to /login when not authorized by portal password
-    if (!loading && !isAuthorized && router.pathname !== '/login') {
+    
+    const publicRoutes = ['/login', '/account/login', '/account/register']
+    const isPublicRoute = publicRoutes.includes(router.pathname)
+    
+    if (!loading && !isAuthorized && !isPublicRoute) {
       router.replace('/login')
     }
   }, [isAuthorized, loading, router])
