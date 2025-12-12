@@ -16,7 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'username and password required' })
     }
 
+    console.log('Connecting to database...')
     await connectToDatabase()
+    console.log('Database connected, checking for existing user...')
 
     const existingUser = await User.findOne({ username })
 
@@ -24,15 +26,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(409).json({ error: 'User exists' })
     }
 
+    console.log('Creating new user...')
     const passwordHash = await bcrypt.hash(password, 10)
 
     const newUser = await User.create({ username, passwordHash })
+    console.log('User created successfully:', newUser._id)
 
     setSession(res, { userId: String(newUser._id), username: newUser.username })
 
     return res.status(201).json({ message: 'register ok', userId: String(newUser._id) })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Register error:', error)
-    return res.status(500).json({ error: 'internal server error' })
+    console.error('Error name:', error?.name)
+    console.error('Error message:', error?.message)
+    console.error('Error stack:', error?.stack)
+    return res.status(500).json({ error: 'internal server error', details: error?.message })
   }
 }
