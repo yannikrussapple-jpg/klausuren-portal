@@ -12,8 +12,7 @@ export default function Home() {
   const [selectedClass, setSelectedClass] = useState<string>('')
   const [selectedTeacher, setSelectedTeacher] = useState<string>('')
   const [teachersLoading, setTeachersLoading] = useState(false)
-  // Effects must be declared unconditionally (avoid conditional hooks)
-  // Load all classes when authorized
+
   useEffect(() => {
     if (!isAuthorized) return
     const loadClasses = async () => {
@@ -27,7 +26,6 @@ export default function Home() {
     loadClasses()
   }, [isAuthorized])
 
-  // Load teachers when class is selected (and when authorized)
   useEffect(() => {
     if (!isAuthorized) return
     if (!selectedClass) {
@@ -55,8 +53,11 @@ export default function Home() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <p className="text-gray-600">Wird geladen...</p>
+        <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-400 text-sm">Wird geladen...</p>
+          </div>
         </div>
       </Layout>
     )
@@ -68,7 +69,7 @@ export default function Home() {
 
   const handleSelectClass = (classId: string) => {
     setSelectedClass(classId)
-    setSelectedTeacher('') // Reset teacher when class changes
+    setSelectedTeacher('')
   }
 
   const handleSelectTeacher = (teacherId: string) => {
@@ -80,78 +81,83 @@ export default function Home() {
     router.push(`/exams?classId=${selectedClass}&teacherId=${selectedTeacher}`)
   }
 
-
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 text-center">Klausuren Portal</h1>
-            <p className="text-center text-gray-600 mb-8">Wähle deine Klasse und deinen Lehrer, um die Klausuren zu sehen</p>
+      <div className="min-h-screen bg-[#0a0a0a] text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12">
+          {/* Header */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-light mb-3">Klausuren</h1>
+            <p className="text-gray-400 text-sm">Wähle deine Klasse und Lehrer</p>
+          </div>
 
-            <div className="space-y-6">
-              {/* Klasse Selection */}
-              <div>
-                <label className="block text-lg font-semibold text-gray-700 mb-3">Schulklasse</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {classes.map(c => (
+          {/* Class Selection */}
+          <div className="mb-8">
+            <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">
+              Klasse
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {classes.map(c => (
+                <button
+                  key={c._id}
+                  onClick={() => handleSelectClass(c._id)}
+                  className={`py-4 px-5 rounded-xl text-left transition-all duration-200 ${
+                    selectedClass === c._id
+                      ? 'bg-emerald-500 text-black font-medium'
+                      : 'bg-[#1a1a1a] text-white hover:bg-[#242424]'
+                  }`}
+                >
+                  <div className="text-lg">{c.name}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Teacher Selection */}
+          {selectedClass && (
+            <div className="mb-8 animate-fadeIn">
+              <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">
+                Lehrer
+              </label>
+              {teachersLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : teachers.length > 0 ? (
+                <div className="space-y-3">
+                  {teachers.map(t => (
                     <button
-                      key={c._id}
-                      onClick={() => handleSelectClass(c._id)}
-                      className={`py-3 px-4 rounded-lg font-semibold transition ${
-                        selectedClass === c._id
-                          ? 'bg-indigo-600 text-white shadow-md'
-                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      key={t._id}
+                      onClick={() => handleSelectTeacher(t._id)}
+                      className={`w-full py-4 px-5 rounded-xl text-left transition-all duration-200 ${
+                        selectedTeacher === t._id
+                          ? 'bg-emerald-500 text-black font-medium'
+                          : 'bg-[#1a1a1a] text-white hover:bg-[#242424]'
                       }`}
                     >
-                      {c.name}
+                      <div className="text-lg">{t.name}</div>
                     </button>
                   ))}
                 </div>
-              </div>
-
-              {/* Lehrer Selection */}
-              {selectedClass && (
-                <div>
-                  <label className="block text-lg font-semibold text-gray-700 mb-3">Lehrer</label>
-                  {teachersLoading ? (
-                    <div className="text-center py-4 text-gray-600">Lade Lehrer...</div>
-                  ) : teachers.length > 0 ? (
-                    <div className="space-y-2">
-                      {teachers.map(t => (
-                        <button
-                          key={t._id}
-                          onClick={() => handleSelectTeacher(t._id)}
-                          className={`w-full py-3 px-4 rounded-lg font-semibold transition text-left ${
-                            selectedTeacher === t._id
-                              ? 'bg-indigo-600 text-white shadow-md'
-                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                          }`}
-                        >
-                          {t.name}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-4 text-gray-600">Keine Lehrer gefunden</div>
-                  )}
+              ) : (
+                <div className="text-center py-8 text-gray-500 text-sm">
+                  Keine Lehrer verfügbar
                 </div>
               )}
+            </div>
+          )}
 
-              {/* Action Button */}
+          {/* Action Button */}
+          {selectedClass && selectedTeacher && (
+            <div className="fixed bottom-6 left-0 right-0 px-4 max-w-2xl mx-auto animate-fadeIn">
               <button
                 onClick={handleViewExams}
-                disabled={!selectedClass || !selectedTeacher}
-                className={`w-full py-3 px-4 rounded-lg font-bold text-white text-lg transition ${
-                  selectedClass && selectedTeacher
-                    ? 'bg-green-600 hover:bg-green-700 cursor-pointer shadow-md'
-                    : 'bg-gray-400 cursor-not-allowed opacity-50'
-                }`}
+                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-medium py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/20"
               >
-                Klausuren anschauen
+                Klausuren anzeigen
               </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Layout>
