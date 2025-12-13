@@ -13,7 +13,6 @@ export default function LoginPage() {
     setError('')
     const ok = loginWithPassword(password)
     if (ok) {
-      // navigate without full reload so in-memory auth remains set
       router.push('/')
     } else {
       setError('Falsches Passwort')
@@ -21,33 +20,40 @@ export default function LoginPage() {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-white p-8 rounded shadow max-w-md w-full">
-          <h2 className="text-2xl font-bold mb-4 text-center">Passwort erforderlich</h2>
-          <p className="text-gray-600 mb-6 text-center">Bitte gib das Portal-Passwort ein.</p>
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-light text-white mb-3">Portal-Zugang</h2>
+          <p className="text-gray-400 text-sm">Bitte gib das Passwort ein</p>
+        </div>
 
-          <form onSubmit={handleSubmit}>
-            <label className="block text-sm font-medium text-gray-700">Passwort</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 mb-4 w-full px-3 py-2 border rounded"
+              placeholder="Passwort"
+              className="w-full px-5 py-4 bg-[#1a1a1a] text-white rounded-xl border border-[#2a2a2a] focus:border-emerald-500 focus:outline-none transition-all"
               autoFocus
+              autoComplete="off"
             />
+          </div>
 
-            {error && <div className="text-red-600 mb-4">{error}</div>}
+          {error && (
+            <div className="text-red-400 text-sm px-2">
+              {error}
+            </div>
+          )}
 
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-2 rounded font-semibold"
-            >
-              Einloggen
-            </button>
-          </form>
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-medium py-4 rounded-xl transition-all duration-200"
+          >
+            Weiter
+          </button>
+        </form>
       </div>
-    </Layout>
+    </div>
   )
 }
