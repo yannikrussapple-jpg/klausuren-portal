@@ -9,11 +9,24 @@ export default function ExamsPage() {
   const router = useRouter()
   const auth = useAuthProtection() as { isAuthorized: boolean; loading: boolean }
   const { isAuthorized, loading } = auth
-  const { classId, teacherId } = router.query
+  const { classId, teacherId, purchased } = router.query
   const [exams, setExams] = useState<any[]>([])
   const [selectedExam, setSelectedExam] = useState<any>(null)
   const [teacher, setTeacher] = useState<any>(null)
   const [examsLoading, setExamsLoading] = useState(true)
+  const [purchaseStatus, setPurchaseStatus] = useState<{[key: string]: boolean}>({})
+  const [checkingPurchase, setCheckingPurchase] = useState(false)
+
+  // Show success message if just purchased
+  useEffect(() => {
+    if (purchased && typeof purchased === 'string') {
+      // User just purchased an exam, show success
+      setTimeout(() => {
+        router.replace(`/exams?classId=${classId}&teacherId=${teacherId}`, undefined, { shallow: true })
+      }, 3000)
+    }
+  }, [purchased])
+
   // Effects must be declared unconditionally to keep hooks order stable
   useEffect(() => {
     if (loading) return
@@ -31,6 +44,29 @@ export default function ExamsPage() {
         }
       })
   }, [classId, teacherId, isAuthorized, loading])
+
+  // Check purchase status when exam is selected
+  useEffect(() => {
+    if (!selectedExam) return
+    
+    const checkPurchase = async () => {
+      setCheckingPurchase(true)
+      try {
+        const response = await axios.get(`/api/payment/check-purchase?examId=${selectedExam._id}`)
+        setPurchaseStatus(prev => ({
+          ...prev,
+          [selectedExam._id]: response.data.purchased
+        }))
+      } catch (error) {
+        console.error('Error checking purchase:', error)
+      }
+      setCheckingPurchase(false)
+    }
+
+    if (purchaseStatus[selectedExam._id] === undefined) {
+      checkPurchase()
+    }
+  }, [selectedExam])
 
   if (loading) {
     return (
@@ -91,7 +127,21 @@ export default function ExamsPage() {
               <p className="text-gray-600 text-lg">Keine Klausuren vorhanden</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <>
+              {/* Success Message */}
+              {purchased && (
+                <div className="mb-6 bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-6 animate-fade-in">
+                  <div className="flex items-center space-x-4">
+                    <span className="text-4xl">✅</span>
+                    <div>
+                      <h3 className="font-semibold text-emerald-900 text-lg">Kauf erfolgreich!</h3>
+                      <p className="text-emerald-700 text-sm">Du hast jetzt unbegrenzten Zugriff auf diese Klausur.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Exams List */}
               <div className="lg:col-span-1 space-y-4">
                 <div className="flex items-center justify-between mb-6">
@@ -153,29 +203,73 @@ export default function ExamsPage() {
 
                     {/* Download Section */}
                     <div className="p-8 bg-gradient-to-br from-white to-gray-50">
-                      <button
-                        onClick={async () => {
-                          try {
-                            const r = await axios.get('/api/users/me')
-                            if (r.data?.user) {
-                              window.open(selectedExam.fileUrl, '_blank')
-                            } else {
-                              sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
-                              const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
-                              router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
-                            }
-                          } catch {
-                            sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
-                            const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
-                            router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
-                          }
-                        }}
-                        className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
-                      >
-                        <span className="text-2xl">📥</span>
-                        <span>Dokument herunterladen</span>
-                      </button>
-                      <p className="text-xs text-gray-500 text-center mt-4">PDF wird in einem neuen Tab geöffnet</p>
+                      {checkingPurchase ? (
+                        <div className="text-center py-8">
+                          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-black"></div>
+                          <p className="text-gray-600 text-sm mt-2">Prüfe Zugriff...</p>
+                        </div>
+                      ) : purchaseStatus[selectedExam._id] ? (
+                        // User has purchased - allow download
+                        <div>
+                          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-4">
+                            <div className="flex items-center space-x-2 text-emerald-700">
+                              <span className="text-xl">✓</span>
+                              <span className="font-medium text-sm">Du besitzt diese Klausur</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => window.open(selectedExam.fileUrl, '_blank')}
+                            className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
+                          >
+                            <span className="text-2xl">📥</span>
+                            <span>Dokument herunterladen</span>
+                          </button>
+                          <p className="text-xs text-gray-500 text-center mt-4">PDF wird in einem neuen Tab geöffnet</p>
+                        </div>
+                      ) : (
+                        // User hasn't purchased - show payment option
+                        <div>
+                          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                            <div className="flex items-start space-x-3">
+                              <span className="text-2xl">💳</span>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-amber-900 mb-1">Klausur kaufen</h3>
+                                <p className="text-sm text-amber-800">Einmaliger Kauf für <span className="font-bold">2,99 €</span></p>
+                                <p className="text-xs text-amber-700 mt-1">Lebenslanger Zugriff • Unbegrenzte Downloads</p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <button
+                            onClick={async () => {
+                              try {
+                                const r = await axios.get('/api/users/me')
+                                if (r.data?.user) {
+                                  // User is logged in, redirect to payment
+                                  router.push(`/payment?examId=${selectedExam._id}&examTitle=${encodeURIComponent(selectedExam.title)}&price=2.99&classId=${classId}&teacherId=${teacherId}`)
+                                } else {
+                                  // User not logged in, store intent and redirect to login
+                                  sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
+                                  const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
+                                  router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
+                                }
+                              } catch {
+                                sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
+                                const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
+                                router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
+                              }
+                            }}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
+                          >
+                            <span className="text-2xl">🛒</span>
+                            <span>Jetzt kaufen - 2,99 €</span>
+                          </button>
+                          
+                          <div className="mt-4 text-center">
+                            <p className="text-xs text-gray-500">Sichere Zahlung mit PayPal</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -187,6 +281,7 @@ export default function ExamsPage() {
                 )}
               </div>
             </div>
+            </>
           )}
         </div>
       </div>
