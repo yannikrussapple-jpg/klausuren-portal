@@ -133,10 +133,16 @@ export default function ExamsPage() {
                           if (r.data?.user) {
                             window.open(selectedExam.fileUrl, '_blank')
                           } else {
-                            router.push(`/account/login?next=${encodeURIComponent(selectedExam.fileUrl)}`)
+                            // Store download URL in sessionStorage for after login
+                            sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
+                            const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
+                            router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
                           }
                         } catch {
-                          router.push(`/account/login?next=${encodeURIComponent(selectedExam.fileUrl)}`)
+                          // Store download URL in sessionStorage for after login
+                          sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
+                          const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
+                          router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
                         }
                       }}
                       className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition"

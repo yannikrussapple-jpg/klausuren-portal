@@ -30,6 +30,14 @@ const LoginPage = () => {
       if (typeof window !== 'undefined') {
         const { loginWithPassword } = await import('../../lib/auth');
         loginWithPassword('Monte');
+        
+        // Check if there's a pending download
+        const pendingDownload = sessionStorage.getItem('pendingDownload');
+        if (pendingDownload) {
+          sessionStorage.removeItem('pendingDownload');
+          // Open download in new tab
+          window.open(pendingDownload, '_blank');
+        }
       }
       
       router.push(nextUrl);
