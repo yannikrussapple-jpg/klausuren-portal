@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import bcrypt from 'bcryptjs'
 import { connectToDatabase } from '../../../lib/mongodb'
 import User from '../../../models/User'
-import { setSession } from '../../../lib/session'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -32,8 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const newUser = await User.create({ username, passwordHash })
     console.log('User created successfully:', newUser._id)
 
-    setSession(res, { userId: String(newUser._id), username: newUser.username })
-
+    // Don't set session on registration - user must login separately
     return res.status(201).json({ message: 'register ok', userId: String(newUser._id) })
   } catch (error: any) {
     console.error('Register error:', error)
