@@ -25,6 +25,13 @@ const LoginPage = () => {
     
     try {
       await axios.post("/api/users/login", { username, password });
+      
+      // Auto-authorize portal access when user logs in
+      if (typeof window !== 'undefined') {
+        const { loginWithPassword } = await import('../../lib/auth');
+        loginWithPassword('Monte');
+      }
+      
       router.push(nextUrl);
     } catch (err: any) {
       const msg = err?.response?.data?.error || "Login fehlgeschlagen";

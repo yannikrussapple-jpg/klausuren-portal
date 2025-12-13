@@ -19,9 +19,16 @@ const RegisterPage = () => {
     
     try {
       await axios.post("/api/users/register", { username, password });
-      setSuccess("Registrierung erfolgreich! Weiterleitung zum Login...");
+      
+      // Auto-authorize portal access when user registers
+      if (typeof window !== 'undefined') {
+        const { loginWithPassword } = await import('../../lib/auth');
+        loginWithPassword('Monte');
+      }
+      
+      setSuccess("Registrierung erfolgreich! Weiterleitung...");
       setTimeout(() => {
-        router.push("/account/login?registered=1");
+        router.push("/");
       }, 800);
     } catch (err: any) {
       const msg = err?.response?.data?.error || "Registrierung fehlgeschlagen";

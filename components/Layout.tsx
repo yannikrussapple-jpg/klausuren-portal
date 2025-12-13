@@ -6,7 +6,15 @@ import axios from 'axios'
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<{ username: string } | null>(null)
   useEffect(() => {
-    axios.get('/api/users/me').then(r => setUser(r.data.user)).catch(() => setUser(null))
+    axios.get('/api/users/me').then(r => {
+      setUser(r.data.user)
+      // If user is logged in, auto-authorize portal access
+      if (r.data.user && typeof window !== 'undefined') {
+        import('../lib/auth').then(({ loginWithPassword }) => {
+          loginWithPassword('Monte')
+        })
+      }
+    }).catch(() => setUser(null))
   }, [])
 
   const handleLogout = async () => {
