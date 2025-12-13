@@ -20,11 +20,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-light text-white mb-3">Portal-Zugang</h2>
-          <p className="text-gray-400 text-sm">Bitte gib das Passwort ein</p>
+          <div className="text-6xl mb-4">🔐</div>
+          <h2 className="text-3xl font-semibold text-black mb-3">Portal-Zugang</h2>
+          <p className="text-gray-600 text-sm">Bitte gib das Passwort ein</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -34,23 +35,23 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Passwort"
-              className="w-full px-5 py-4 bg-[#1a1a1a] text-white rounded-xl border border-[#2a2a2a] focus:border-emerald-500 focus:outline-none transition-all"
+              className="w-full px-6 py-5 bg-white text-black rounded-2xl border-2 border-gray-200 focus:border-black focus:outline-none transition-all shadow-sm"
               autoFocus
               autoComplete="off"
             />
           </div>
 
           {error && (
-            <div className="text-red-400 text-sm px-2">
+            <div className="text-red-600 text-sm px-2 font-medium">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-medium py-4 rounded-xl transition-all duration-200"
+            className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-5 rounded-2xl transition-all duration-200 shadow-lg"
           >
-            Weiter
+            Weiter →
           </button>
         </form>
       </div>

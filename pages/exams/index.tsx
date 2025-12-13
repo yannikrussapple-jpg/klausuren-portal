@@ -66,42 +66,59 @@ export default function ExamsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <Link href="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">← Zurück</Link>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Klausuren</h1>
-            {teacher && <p className="text-lg text-gray-600">{teacher.name}</p>}
+          <div className="mb-10">
+            <Link href="/" className="inline-flex items-center text-gray-600 hover:text-black mb-6 font-medium transition">
+              <span className="mr-2">←</span> Zurück
+            </Link>
+            <div className="flex items-baseline space-x-4 mb-2">
+              <h1 className="text-4xl font-semibold text-black">Klausuren</h1>
+              {teacher && <span className="text-xl text-gray-500">{teacher.name}</span>}
+            </div>
+            <div className="h-1 w-20 bg-black rounded-full"></div>
           </div>
 
           {examsLoading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Lade Klausuren...</p>
+            <div className="text-center py-16">
+              <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-black"></div>
+              <p className="text-gray-600 mt-4">Lade Klausuren...</p>
             </div>
           ) : exams.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Keine Klausuren vorhanden</p>
+            <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
+              <div className="text-5xl mb-4">📚</div>
+              <p className="text-gray-600 text-lg">Keine Klausuren vorhanden</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Exams List */}
-              <div className="lg:col-span-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Verfügbare Klausuren</h2>
+              <div className="lg:col-span-1 space-y-4">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-black">Verfügbar</h2>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full font-medium">{exams.length} {exams.length === 1 ? 'Klausur' : 'Klausuren'}</span>
+                </div>
                 <div className="space-y-3">
                   {exams.map((exam) => (
                     <button
                       key={exam._id}
                       onClick={() => setSelectedExam(exam)}
-                      className={`w-full text-left p-4 rounded-lg transition ${
+                      className={`w-full text-left p-5 rounded-xl transition-all duration-200 ${
                         selectedExam?._id === exam._id
-                          ? 'bg-indigo-600 text-white shadow-lg'
-                          : 'bg-white text-gray-900 border border-gray-200 hover:border-indigo-300 hover:shadow-md'
+                          ? 'bg-black text-white shadow-lg scale-[1.02]'
+                          : 'bg-white text-gray-900 border-2 border-gray-200 hover:border-black hover:shadow-md'
                       }`}
                     >
-                      <div className="font-semibold">{exam.title}</div>
-                      <div className={`text-sm ${selectedExam?._id === exam._id ? 'text-indigo-100' : 'text-gray-500'}`}>
-                        Klausur Nr. {exam.number}
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="font-semibold mb-1">{exam.title}</div>
+                          <div className={`text-sm ${selectedExam?._id === exam._id ? 'text-gray-300' : 'text-gray-500'}`}>
+                            Nr. {exam.number}
+                          </div>
+                        </div>
+                        <div className={`text-2xl ${selectedExam?._id === exam._id ? 'opacity-100' : 'opacity-30'}`}>
+                          📄
+                        </div>
                       </div>
                     </button>
                   ))}
@@ -111,48 +128,61 @@ export default function ExamsPage() {
               {/* Exam Viewer */}
               <div className="lg:col-span-2">
                 {selectedExam ? (
-                  <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">{selectedExam.title}</h2>
-                    <p className="text-gray-600 mb-6">Klausur Nummer: {selectedExam.number}</p>
+                  <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 overflow-hidden">
+                    <div className="p-8 border-b-2 border-gray-200 bg-gradient-to-br from-gray-50 to-white">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h2 className="text-3xl font-semibold text-black mb-2">{selectedExam.title}</h2>
+                          <div className="flex items-center space-x-3 text-sm">
+                            <span className="text-gray-600">Klausur Nummer</span>
+                            <span className="bg-black text-white px-3 py-1 rounded-full font-medium">{selectedExam.number}</span>
+                          </div>
+                        </div>
+                        <div className="text-5xl">📝</div>
+                      </div>
+                    </div>
                     
                     {/* PDF Viewer */}
-                    <div className="bg-gray-100 rounded-lg overflow-hidden mb-6">
+                    <div className="bg-gray-100 border-y-2 border-gray-200">
                       <iframe
                         src={selectedExam.fileUrl}
-                        className="w-full h-96"
+                        className="w-full h-[500px]"
                         title={selectedExam.title}
                       />
                     </div>
 
-                    {/* Download Button */}
-                    {/** Gate download: redirect to login/register if not logged in */}
-                    <button
-                      onClick={async () => {
-                        try {
-                          const r = await axios.get('/api/users/me')
-                          if (r.data?.user) {
-                            window.open(selectedExam.fileUrl, '_blank')
-                          } else {
-                            // Store download URL in sessionStorage for after login
+                    {/* Download Section */}
+                    <div className="p-8 bg-gradient-to-br from-white to-gray-50">
+                      <button
+                        onClick={async () => {
+                          try {
+                            const r = await axios.get('/api/users/me')
+                            if (r.data?.user) {
+                              window.open(selectedExam.fileUrl, '_blank')
+                            } else {
+                              sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
+                              const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
+                              router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
+                            }
+                          } catch {
                             sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
                             const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
                             router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
                           }
-                        } catch {
-                          // Store download URL in sessionStorage for after login
-                          sessionStorage.setItem('pendingDownload', selectedExam.fileUrl)
-                          const currentPath = `${router.pathname}${router.asPath.includes('?') ? router.asPath.substring(router.asPath.indexOf('?')) : ''}`
-                          router.push(`/account/login?next=${encodeURIComponent(currentPath)}`)
-                        }
-                      }}
-                      className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition"
-                    >
-                      📥 Dokument herunterladen
-                    </button>
+                        }}
+                        className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
+                      >
+                        <span className="text-2xl">📥</span>
+                        <span>Dokument herunterladen</span>
+                      </button>
+                      <p className="text-xs text-gray-500 text-center mt-4">PDF wird in einem neuen Tab geöffnet</p>
+                    </div>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-lg shadow-lg p-6 text-center text-gray-500">
-                    Wähle eine Klausur aus, um sie anzuschauen
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300 p-16 text-center">
+                    <div className="text-6xl mb-4">👈</div>
+                    <p className="text-gray-600 text-lg font-medium">Wähle eine Klausur aus</p>
+                    <p className="text-gray-500 text-sm mt-2">Klicke auf eine Klausur in der Liste</p>
                   </div>
                 )}
               </div>

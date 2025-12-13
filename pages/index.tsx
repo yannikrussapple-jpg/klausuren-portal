@@ -83,31 +83,37 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#0a0a0a] text-white">
-        <div className="max-w-2xl mx-auto px-4 py-12">
-          {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-4xl font-light mb-3">Klausuren</h1>
-            <p className="text-gray-400 text-sm">Wähle deine Klasse und Lehrer</p>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-2xl mx-auto px-4 py-8">
+          {/* Decorative Header Card */}
+          <div className="mb-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl p-8 text-white animate-slideUp">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold mb-2">Klausuren</h1>
+                <p className="text-emerald-50 text-sm">Wähle deine Klasse und Lehrer aus</p>
+              </div>
+              <div className="text-6xl opacity-20">📚</div>
+            </div>
           </div>
 
           {/* Class Selection */}
           <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">
-              Klasse
+            <label className="block text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">
+              Deine Klasse
             </label>
             <div className="grid grid-cols-2 gap-3">
-              {classes.map(c => (
+              {classes.map((c, idx) => (
                 <button
                   key={c._id}
                   onClick={() => handleSelectClass(c._id)}
-                  className={`py-4 px-5 rounded-xl text-left transition-all duration-200 ${
+                  style={{ animationDelay: `${idx * 50}ms` }}
+                  className={`py-5 px-5 rounded-2xl text-left transition-all duration-200 animate-fadeIn border-2 ${
                     selectedClass === c._id
-                      ? 'bg-emerald-500 text-black font-medium'
-                      : 'bg-[#1a1a1a] text-white hover:bg-[#242424]'
+                      ? 'bg-black text-white border-black shadow-lg scale-105'
+                      : 'bg-white text-black border-gray-200 hover:border-gray-400 hover:shadow-md'
                   }`}
                 >
-                  <div className="text-lg">{c.name}</div>
+                  <div className="text-lg font-medium">{c.name}</div>
                 </button>
               ))}
             </div>
@@ -115,32 +121,36 @@ export default function Home() {
 
           {/* Teacher Selection */}
           {selectedClass && (
-            <div className="mb-8 animate-fadeIn">
-              <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">
-                Lehrer
+            <div className="mb-24 animate-slideUp">
+              <label className="block text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">
+                Dein Lehrer
               </label>
               {teachersLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex justify-center py-12">
+                  <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : teachers.length > 0 ? (
                 <div className="space-y-3">
-                  {teachers.map(t => (
+                  {teachers.map((t, idx) => (
                     <button
                       key={t._id}
                       onClick={() => handleSelectTeacher(t._id)}
-                      className={`w-full py-4 px-5 rounded-xl text-left transition-all duration-200 ${
+                      style={{ animationDelay: `${idx * 50}ms` }}
+                      className={`w-full py-5 px-5 rounded-2xl text-left transition-all duration-200 animate-fadeIn border-2 ${
                         selectedTeacher === t._id
-                          ? 'bg-emerald-500 text-black font-medium'
-                          : 'bg-[#1a1a1a] text-white hover:bg-[#242424]'
+                          ? 'bg-black text-white border-black shadow-lg'
+                          : 'bg-white text-black border-gray-200 hover:border-gray-400 hover:shadow-md'
                       }`}
                     >
-                      <div className="text-lg">{t.name}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-lg font-medium">{t.name}</div>
+                        {selectedTeacher === t._id && <span className="text-emerald-400">✓</span>}
+                      </div>
                     </button>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500 text-sm">
+                <div className="text-center py-12 text-gray-400 text-sm">
                   Keine Lehrer verfügbar
                 </div>
               )}
@@ -149,13 +159,15 @@ export default function Home() {
 
           {/* Action Button */}
           {selectedClass && selectedTeacher && (
-            <div className="fixed bottom-6 left-0 right-0 px-4 max-w-2xl mx-auto animate-fadeIn">
-              <button
-                onClick={handleViewExams}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-medium py-4 rounded-xl transition-all duration-200 shadow-lg shadow-emerald-500/20"
-              >
-                Klausuren anzeigen
-              </button>
+            <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-6 pb-6 px-4 animate-slideUp">
+              <div className="max-w-2xl mx-auto">
+                <button
+                  onClick={handleViewExams}
+                  className="w-full bg-black hover:bg-gray-900 text-white font-semibold py-5 rounded-2xl transition-all duration-200 shadow-xl"
+                >
+                  Klausuren anzeigen →
+                </button>
+              </div>
             </div>
           )}
         </div>
