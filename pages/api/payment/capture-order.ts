@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { client } from '../../../lib/paypal'
 import { getSession } from '../../../lib/session'
-import dbConnect from '../../../lib/mongodb'
+import { connectToDatabase } from '../../../lib/mongodb'
 import User from '../../../models/User'
 const paypal = require('@paypal/checkout-server-sdk')
 
@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Verify payment was successful
     if (capture.result.status === 'COMPLETED') {
       // Add exam to user's purchased exams
-      await dbConnect()
+      await connectToDatabase()
       await User.findByIdAndUpdate(
         session.userId,
         { $addToSet: { purchasedExams: examId } }

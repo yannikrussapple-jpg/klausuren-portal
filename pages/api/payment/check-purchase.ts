@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from '../../../lib/session'
-import dbConnect from '../../../lib/mongodb'
+import { connectToDatabase } from '../../../lib/mongodb'
 import User from '../../../models/User'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if user has purchased this exam
-    await dbConnect()
+    await connectToDatabase()
     const user = await User.findById(session.userId)
     
     if (!user) {
