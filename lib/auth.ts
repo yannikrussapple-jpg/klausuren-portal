@@ -2,7 +2,7 @@ import React from 'react'
 
 // In-memory auth flag. Not persisted — cleared on full page reload.
 let memoryAuth = false
-const PASSWORD = 'Monte'
+const PASSWORD = 'admin0401'
 
 export function useAuthProtection(): { isAuthorized: boolean; loading: boolean } {
   const [isAuthorized, setIsAuthorized] = React.useState(false)

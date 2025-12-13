@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       // If user is logged in, auto-authorize portal access
       if (r.data.user && typeof window !== 'undefined') {
         import('../lib/auth').then(({ loginWithPassword }) => {
-          loginWithPassword('Monte')
+          loginWithPassword('admin0401')
         })
       }
     }).catch(() => setUser(null))
