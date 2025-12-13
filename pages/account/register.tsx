@@ -93,6 +93,13 @@ const RegisterPage = () => {
           <p className="text-sm text-gray-600 mt-6">
             Schon ein Konto? <a href="/account/login" className="text-emerald-700 underline font-semibold">Login</a>
           </p>
+
+          <button
+            onClick={() => router.push('/')}
+            className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-lg"
+          >
+            ← Zurück zur Hauptseite
+          </button>
         </div>
       </div>
     </Layout>
